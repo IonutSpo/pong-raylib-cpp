@@ -1,0 +1,7 @@
+*.exe
+*.dll
+.vscode
+main.code-workspace
+Makefile
+.DS_Store
+
