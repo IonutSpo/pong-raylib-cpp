@@ -8,6 +8,8 @@ struct AnimData
     int frame;
     float updateTime;
     float runningTime;
+    float velocityX;
+    float velocityY;
 };
 
 int main() 
@@ -28,6 +30,8 @@ int main()
     ball.frame = 0;
     ball.updateTime = 1.0/12.0;
     ball.runningTime = 0;
+    ball.velocityX = 150;
+    ball.velocityY = 150;
     
     AnimData leftPaddle;
     leftPaddle.texture = LoadTexture("textures/left_paddle.png");
@@ -47,7 +51,7 @@ int main()
     rightPaddle.pos.x = windowWidth - rightPaddle.rec.width;
     rightPaddle.pos.y = windowHeight / 2 - rightPaddle.rec.height / 2;
 
-    
+
 
     SetTargetFPS(60);
     while (!WindowShouldClose())
@@ -57,6 +61,22 @@ int main()
         
         // delta time
         float dT{GetFrameTime()};
+
+        // move the ball 
+        ball.pos.x += ball.velocityX * dT;
+        ball.pos.y += ball.velocityY * dT;
+
+        // check if the ball goes off the screen
+        if (ball.pos.y < 0 + ball.rec.height / 2)
+        {   
+            ball.pos.y = 0 + ball.rec.height;
+            ball.velocityY *= -1;
+        }
+        if (ball.pos.y > windowHeight - ball.rec.height / 2)
+        {   
+            ball.pos.y = windowHeight - ball.rec.height;
+            ball.velocityY *= -1;
+        }
         
         ball.runningTime += dT;
         if (ball.runningTime >= ball.updateTime)
