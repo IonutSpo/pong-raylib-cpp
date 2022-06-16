@@ -25,7 +25,10 @@ int main()
     ball.rec.y = 0;
     ball.pos.x = windowWidth / 2 - ball.rec.width / 2;
     ball.pos.y = windowHeight / 2 - ball.rec.height / 2;
-
+    ball.frame = 0;
+    ball.updateTime = 1.0/12.0;
+    ball.runningTime = 0;
+    
     AnimData leftPaddle;
     leftPaddle.texture = LoadTexture("textures/left_paddle.png");
     leftPaddle.rec.width = leftPaddle.texture.width;
@@ -44,10 +47,31 @@ int main()
     rightPaddle.pos.x = windowWidth - rightPaddle.rec.width;
     rightPaddle.pos.y = windowHeight / 2 - rightPaddle.rec.height / 2;
 
+    
+
+    SetTargetFPS(60);
     while (!WindowShouldClose())
-    {
+    {   
         BeginDrawing();
         ClearBackground(BLACK);
+        
+        // delta time
+        float dT{GetFrameTime()};
+        
+        ball.runningTime += dT;
+        if (ball.runningTime >= ball.updateTime)
+        {
+            ball.runningTime = 0.0;
+            
+            // update ball animation frame
+            ball.rec.x = ball.frame * ball.rec.width;
+            ball.frame++;
+            if (ball.frame > 5)
+            {
+                ball.frame = 0;
+            }
+
+        }
 
         // draw the ball
         DrawTextureRec(ball.texture, ball.rec, ball.pos, WHITE);
