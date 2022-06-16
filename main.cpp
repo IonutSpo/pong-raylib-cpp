@@ -1,6 +1,6 @@
 #include "raylib.h"
 
-struct AnimData
+struct Ball
 {   
     Texture2D texture;
     Rectangle rec;
@@ -12,6 +12,17 @@ struct AnimData
     float velocityY;
 };
 
+struct Paddle
+{
+    Texture2D texture;
+    Rectangle rec;
+    Vector2 pos;
+    int frame;
+    float updateTime;
+    float runningTime;
+    float velocity;
+};
+
 int main() 
 {   
 
@@ -19,7 +30,7 @@ int main()
     const int windowHeight{300};
     InitWindow(windowWidth, windowHeight, "Pong");
 
-    AnimData ball;
+    Ball ball;
     ball.texture = LoadTexture("textures/ball.png");
     ball.rec.width = ball.texture.width / 6;
     ball.rec.height = ball.texture.height;
@@ -33,7 +44,7 @@ int main()
     ball.velocityX = 150;
     ball.velocityY = 150;
     
-    AnimData leftPaddle;
+    Paddle leftPaddle;
     leftPaddle.texture = LoadTexture("textures/left_paddle.png");
     leftPaddle.rec.width = leftPaddle.texture.width;
     leftPaddle.rec.height = leftPaddle.texture.height;
@@ -41,8 +52,9 @@ int main()
     leftPaddle.rec.y = 0;
     leftPaddle.pos.x = 0;
     leftPaddle.pos.y = windowHeight / 2 - leftPaddle.rec.height / 2;
+    leftPaddle.velocity = 80;
 
-    AnimData rightPaddle;
+    Paddle rightPaddle;
     rightPaddle.texture = LoadTexture("textures/right_paddle.png");
     rightPaddle.rec.width = rightPaddle.texture.width;
     rightPaddle.rec.height = rightPaddle.texture.height;
@@ -50,8 +62,7 @@ int main()
     rightPaddle.rec.y = 0;
     rightPaddle.pos.x = windowWidth - rightPaddle.rec.width;
     rightPaddle.pos.y = windowHeight / 2 - rightPaddle.rec.height / 2;
-
-
+    rightPaddle.velocity = 80;
 
     SetTargetFPS(60);
     while (!WindowShouldClose())
@@ -77,13 +88,22 @@ int main()
             ball.pos.y = windowHeight - ball.rec.height;
             ball.velocityY *= -1;
         }
+
+        // move the paddles
+        if (IsKeyDown(KEY_A)) leftPaddle.pos.y -= leftPaddle.velocity * dT;
+      
+        if (IsKeyDown(KEY_D)) leftPaddle.pos.y += leftPaddle.velocity * dT;
+       
+        if (IsKeyDown(KEY_UP)) rightPaddle.pos.y -= rightPaddle.velocity * dT;
+
+        if (IsKeyDown(KEY_DOWN)) rightPaddle.pos.y += rightPaddle.velocity * dT;
         
         ball.runningTime += dT;
         if (ball.runningTime >= ball.updateTime)
         {
             ball.runningTime = 0.0;
             
-            // update ball animation frame
+            // update ball animation frames
             ball.rec.x = ball.frame * ball.rec.width;
             ball.frame++;
             if (ball.frame > 5)
