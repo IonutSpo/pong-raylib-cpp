@@ -1,6 +1,8 @@
 *.exe
 *.dll
 .vscode
+main.dSYM
+main
 main.code-workspace
 Makefile
 .DS_Store
