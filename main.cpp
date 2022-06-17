@@ -43,7 +43,7 @@ int main()
     ball.runningTime = 0;
     ball.velocityX = 150;
     ball.velocityY = 150;
-    
+
     Paddle leftPaddle;
     leftPaddle.texture = LoadTexture("textures/left_paddle.png");
     leftPaddle.rec.width = leftPaddle.texture.width;
@@ -77,10 +77,53 @@ int main()
         ball.pos.x += ball.velocityX * dT;
         ball.pos.y += ball.velocityY * dT;
 
+        // check collision between ball and the paddles
+        float pad{20};
+
+        Rectangle ballRec
+        {
+            ball.pos.x + (pad/2),
+            ball.pos.y + (pad/2),
+            ball.rec.width - pad,
+            ball.rec.height - pad
+        };
+        
+        Rectangle leftPaddleRec
+        {
+           leftPaddle.pos.x + pad,
+           leftPaddle.pos.y + pad,
+           leftPaddle.rec.width - 2*pad,
+           leftPaddle.rec.height - 2*pad
+        };
+
+        Rectangle rightPaddleRec
+        {
+            rightPaddle.pos.x + pad,
+            rightPaddle.pos.y + pad,
+            rightPaddle.rec.width - 2*pad,
+            rightPaddle.rec.height - 2*pad
+        };
+
+        if (CheckCollisionRecs(ballRec, rightPaddleRec)) 
+        {
+            if (ball.velocityX > 0)
+            {
+                ball.velocityX *= -1;
+            }
+        }
+    
+        if (CheckCollisionRecs(ballRec, leftPaddleRec))
+        {
+            if (ball.velocityX < 0)
+            {
+                ball.velocityX *= -1;
+            }
+        }
+
         // check if the ball goes off the screen
-        if (ball.pos.y < 0 + ball.rec.height / 2)
+        if (ball.pos.y < -20 + ball.rec.height / 2)
         {   
-            ball.pos.y = 0 + ball.rec.height;
+            ball.pos.y = -20 + ball.rec.height;
             ball.velocityY *= -1;
         }
         if (ball.pos.y > windowHeight - ball.rec.height / 2)
@@ -90,13 +133,13 @@ int main()
         }
 
         // move the paddles
-        if (IsKeyDown(KEY_A)) leftPaddle.pos.y -= leftPaddle.velocity * dT;
-      
-        if (IsKeyDown(KEY_D)) leftPaddle.pos.y += leftPaddle.velocity * dT;
-       
-        if (IsKeyDown(KEY_UP)) rightPaddle.pos.y -= rightPaddle.velocity * dT;
+        if (IsKeyDown(KEY_A) && leftPaddle.pos.y >= -pad) leftPaddle.pos.y -= leftPaddle.velocity * dT;
 
-        if (IsKeyDown(KEY_DOWN)) rightPaddle.pos.y += rightPaddle.velocity * dT;
+        if (IsKeyDown(KEY_D) && leftPaddle.pos.y <= windowHeight - rightPaddle.rec.height + pad) leftPaddle.pos.y += leftPaddle.velocity * dT;
+       
+        if (IsKeyDown(KEY_UP) && rightPaddle.pos.y >= -pad) rightPaddle.pos.y -= rightPaddle.velocity * dT;
+
+        if (IsKeyDown(KEY_DOWN) && rightPaddle.pos.y <= windowHeight - rightPaddle.rec.height + pad) rightPaddle.pos.y += rightPaddle.velocity * dT;
         
         ball.runningTime += dT;
         if (ball.runningTime >= ball.updateTime)
