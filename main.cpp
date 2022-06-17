@@ -17,9 +17,6 @@ struct Paddle
     Texture2D texture;
     Rectangle rec;
     Vector2 pos;
-    int frame;
-    float updateTime;
-    float runningTime;
     float velocity;
 };
 
@@ -52,7 +49,7 @@ int main()
     leftPaddle.rec.y = 0;
     leftPaddle.pos.x = 0;
     leftPaddle.pos.y = windowHeight / 2 - leftPaddle.rec.height / 2;
-    leftPaddle.velocity = 80;
+    leftPaddle.velocity = 120;
 
     Paddle rightPaddle;
     rightPaddle.texture = LoadTexture("textures/right_paddle.png");
@@ -62,20 +59,40 @@ int main()
     rightPaddle.rec.y = 0;
     rightPaddle.pos.x = windowWidth - rightPaddle.rec.width;
     rightPaddle.pos.y = windowHeight / 2 - rightPaddle.rec.height / 2;
-    rightPaddle.velocity = 80;
+    rightPaddle.velocity = 120;
+
+    Texture2D table = LoadTexture("textures/background.png");
 
     SetTargetFPS(60);
     while (!WindowShouldClose())
     {   
         BeginDrawing();
         ClearBackground(BLACK);
-        
+
+        // draw the table (background) raylib doesn't render it...
+        DrawTextureEx(table, Vector2{0.0, 0.0}, 0.0, 0.0, WHITE);
+
+        // draw the ball and paddles
+        DrawTextureRec(ball.texture, ball.rec, ball.pos, WHITE);
+        DrawTextureRec(leftPaddle.texture, leftPaddle.rec, leftPaddle.pos, WHITE);
+        DrawTextureRec(rightPaddle.texture, rightPaddle.rec, rightPaddle.pos, WHITE);
+         
         // delta time
         float dT{GetFrameTime()};
 
         // move the ball 
         ball.pos.x += ball.velocityX * dT;
         ball.pos.y += ball.velocityY * dT;
+
+        // check if the ball left the screen and declare a winner
+        if (ball.pos.x < -ball.rec.width)
+        {
+            DrawText("Right Player Wins!", windowWidth / 2 - MeasureText("Right Player Wins!", 30) / 2, windowHeight / 2, 30, RED);
+        }
+        if (ball.pos.x > windowWidth + ball.rec.width)
+        {
+            DrawText("Left Player Wins!", windowWidth / 2 - MeasureText("Left Player Wins!", 30) / 2, windowHeight / 2, 30, RED);
+        }
 
         // check collision between ball and the paddles
         float pad{20};
@@ -116,7 +133,7 @@ int main()
         {
             if (ball.velocityX < 0)
             {
-                ball.velocityX *= -1;
+                ball.velocityX *= -1.1;
             }
         }
 
@@ -156,11 +173,6 @@ int main()
 
         }
 
-        // draw the ball
-        DrawTextureRec(ball.texture, ball.rec, ball.pos, WHITE);
-        DrawTextureRec(leftPaddle.texture, leftPaddle.rec, leftPaddle.pos, WHITE);
-        DrawTextureRec(rightPaddle.texture, rightPaddle.rec, rightPaddle.pos, WHITE);
-
         EndDrawing();
         
     };
@@ -168,5 +180,6 @@ int main()
     UnloadTexture(ball.texture);
     UnloadTexture(leftPaddle.texture);
     UnloadTexture(rightPaddle.texture);
+    UnloadTexture(table);
     CloseWindow();
 }
