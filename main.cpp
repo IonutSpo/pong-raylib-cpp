@@ -86,14 +86,26 @@ int main()
 
         // check if the ball left the screen and declare a winner
         if (ball.pos.x < -ball.rec.width)
-        {
+        {      
+            leftPaddle.pos.x = 0;
+            leftPaddle.pos.y = windowHeight / 2 - leftPaddle.rec.height / 2;
+
+            rightPaddle.pos.x = windowWidth - rightPaddle.rec.width;
+            rightPaddle.pos.y = windowHeight / 2 - rightPaddle.rec.height / 2;
+
             DrawText("Right Player Wins!", windowWidth / 2 - MeasureText("Right Player Wins!", 30) / 2, windowHeight / 2, 30, RED);
         }
         if (ball.pos.x > windowWidth + ball.rec.width)
-        {
+        {   
+            leftPaddle.pos.x = 0;
+            leftPaddle.pos.y = windowHeight / 2 - leftPaddle.rec.height / 2;
+
+            rightPaddle.pos.x = windowWidth - rightPaddle.rec.width;
+            rightPaddle.pos.y = windowHeight / 2 - rightPaddle.rec.height / 2;
+
             DrawText("Left Player Wins!", windowWidth / 2 - MeasureText("Left Player Wins!", 30) / 2, windowHeight / 2, 30, RED);
         }
-
+       
         // check collision between ball and the paddles
         float pad{20};
 
